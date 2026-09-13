@@ -1,0 +1,27 @@
+# OS & IDE Metadata
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Archives, Bundles & Build Artifacts
+*.zip
+*.rar
+*.tar.gz
+*.7z
+team_packages/
+scratch/
+testnow.zip
+
+# Server Logs & Runtime Data
+*.log
+*.tmp
+*.temp
+
+# Personal Documents & Course Lecture Slides (Not part of web application)
+PROJECT_DOCUMENTATION.md
+guideline.md
+pdfs/
+index.html
