@@ -8,7 +8,7 @@
  */
 function getLogisticsRequestsByUser($conn, $userId) {
     $sql = "SELECT l.*, l.purpose as event_name, l.item_name as item_type,
-                   l.date_needed as needed_date, l.date_needed as return_date,
+                   l.date_needed as needed_date, l.date_return as return_date,
                    l.admin_notes as notes
             FROM logistics_requests l
             WHERE l.user_id = ?
@@ -26,9 +26,9 @@ function getLogisticsRequestsByUser($conn, $userId) {
  */
 function getAllLogisticsRequests($conn) {
     $sql = "SELECT l.*, l.purpose as event_name, l.item_name as item_type,
-                   l.date_needed as needed_date, l.date_needed as return_date,
+                   l.date_needed as needed_date, l.date_return as return_date,
                    l.admin_notes as notes,
-                   u.full_name as requester_name, u.role as requester_role_name
+                   COALESCE(u.full_name, l.club_or_org) as requester_name, u.role as requester_role_name
             FROM logistics_requests l
             LEFT JOIN users u ON l.user_id = u.id
             ORDER BY l.requested_at DESC";
@@ -48,10 +48,11 @@ function createLogisticsRequest($conn, $userId, $eventName, $itemType, $qty, $ne
     $role = $user_row['role'] ?? 'club_exec';
     $club_or_org = ($role === 'recruiter') ? 'Corporate Recruiter' : 'AIUB Student Club';
 
-    $sql = "INSERT INTO logistics_requests (user_id, requester_role, club_or_org, item_name, quantity, purpose, date_needed, dispatch_status, admin_notes)
-            VALUES (?, ?, ?, ?, ?, ?, ?, 'Requested', ?)";
+    $sql = "INSERT INTO logistics_requests (user_id, requester_role, club_or_org, item_name, quantity, purpose, date_needed, date_return, dispatch_status, admin_notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Requested', ?)";
     $stmt = mysqli_prepare($conn, $sql);
-    mysqli_stmt_bind_param($stmt, "isssisss", $userId, $role, $club_or_org, $itemType, $qty, $eventName, $neededDate, $notes);
+    $returnDate = $returnDate !== '' ? $returnDate : null;
+    mysqli_stmt_bind_param($stmt, "isssissss", $userId, $role, $club_or_org, $itemType, $qty, $eventName, $neededDate, $returnDate, $notes);
     $res = mysqli_stmt_execute($stmt);
     $newId = $res ? mysqli_insert_id($conn) : false;
     mysqli_stmt_close($stmt);

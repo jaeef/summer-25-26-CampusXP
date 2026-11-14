@@ -3,74 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Account – CampusXP</title>
+    <title>Create account – CampusXP</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1.25rem; background: var(--bg-page);">
+<body class="auth-page">
 
-    <div style="max-width: 520px; width: 100%;">
-        <!-- Brand Header -->
-        <div style="text-align: center; margin-bottom: 1.25rem;">
-            <div class="logo-badge" style="margin: 0 auto 8px; width: 40px; height: 40px; font-size: 1.3rem;">C</div>
-            <h1 style="font-size: 1.5rem; font-weight: 800; color: #1e3a8a;">Join <span style="color: var(--brand-gold);">CampusXP</span></h1>
-            <p style="color: var(--text-muted); font-size: 0.84rem; margin-top: 2px;">Create your authenticated campus account</p>
+    <div class="auth-box auth-box-wide">
+        <div class="auth-brand">
+            <div class="logo-badge">C</div>
+            <div class="brand-text">CampusXP</div>
         </div>
 
+        <h1 class="auth-title">Create your account</h1>
+        <p class="auth-sub">For AIUB students, club executives and recruiters.</p>
+
         <?php if ($flash): ?>
-            <div class="flash-alert flash-<?= $flash['type'] === 'success' ? 'success' : 'error' ?>" style="margin-bottom: 1rem; padding: 8px 14px;">
+            <div class="flash-alert flash-<?= $flash['type'] === 'success' ? 'success' : 'error' ?>" role="alert">
                 <span><?= htmlspecialchars($flash['message']) ?></span>
             </div>
         <?php endif; ?>
 
-        <!-- Registration Card -->
-        <div class="glass-card" style="padding: 1.25rem 1.5rem;">
+        <div class="glass-card" style="padding: 1.5rem;">
             <form action="index.php?controller=auth&action=register" method="POST" id="reg-form" onsubmit="return validateRegistrationForm()">
-                
-                <!-- Role Selector -->
-                <div class="form-group" style="margin-bottom: 0.85rem;">
-                    <label class="form-label" style="margin-bottom: 4px;">Select Account Role</label>
-                    <select name="role" id="reg-role" class="form-control" onchange="toggleRoleFields()" required style="height: 38px;">
-                        <option value="student" selected>AIUB Student</option>
-                        <option value="club_exec">Club Executive</option>
-                        <option value="recruiter">Corporate Recruiter</option>
+
+                <div class="form-group">
+                    <label class="form-label" for="reg-role">I am a</label>
+                    <select name="role" id="reg-role" class="form-control" onchange="toggleRoleFields()" required>
+                        <option value="student" selected>AIUB student</option>
+                        <option value="club_exec">Club executive</option>
+                        <option value="recruiter">Recruiter</option>
                     </select>
                 </div>
 
-                <div class="grid-2" style="gap: 0.85rem; margin-bottom: 0.85rem;">
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label class="form-label" style="margin-bottom: 4px;">Full Name</label>
-                        <input type="text" name="full_name" id="reg-fullname" class="form-control" placeholder="e.g. Samiul Chowdhury" minlength="3" maxlength="60" pattern="^[a-zA-Z\s\.\-']+$" title="Only letters and spaces are allowed (no numbers)" required style="height: 38px;" oninput="validateFullNameInput(this)">
-                        <div id="fullname-error" style="color: #dc2626; font-size: 0.75rem; margin-top: 2px; display: none;"></div>
+                <div class="grid-2" style="gap: 0 1rem;">
+                    <div class="form-group">
+                        <label class="form-label" for="reg-fullname">Full name</label>
+                        <input type="text" name="full_name" id="reg-fullname" class="form-control" autocomplete="name" placeholder="Samiul Chowdhury" minlength="3" maxlength="60" pattern="^[a-zA-Z\s\.\-']+$" title="Only letters and spaces are allowed (no numbers)" required oninput="validateFullNameInput(this)">
+                        <div class="field-error" id="fullname-error" style="display: none;"></div>
                     </div>
 
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label class="form-label" style="margin-bottom: 4px;">Email Address</label>
-                        <input type="email" name="email" id="reg-email" class="form-control" placeholder="e.g. name@student.aiub.edu" required style="height: 38px;">
-                        <div id="email-error" style="color: #dc2626; font-size: 0.75rem; margin-top: 2px; display: none;"></div>
+                    <div class="form-group">
+                        <label class="form-label" for="reg-email">Email</label>
+                        <input type="email" name="email" id="reg-email" class="form-control" autocomplete="email" placeholder="name@student.aiub.edu" required>
+                        <div class="field-error" id="email-error" style="display: none;"></div>
                     </div>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 0.85rem;">
-                    <label class="form-label" style="margin-bottom: 4px;">Password (Min 6 Characters)</label>
-                    <input type="password" name="password" id="reg-password" class="form-control" placeholder="••••••••" minlength="6" required style="height: 38px;">
-                    <div id="password-error" style="color: #dc2626; font-size: 0.75rem; margin-top: 2px; display: none;"></div>
+                <div class="form-group">
+                    <label class="form-label" for="reg-password">Password</label>
+                    <input type="password" name="password" id="reg-password" class="form-control" autocomplete="new-password" minlength="6" required>
+                    <span class="form-hint">At least 6 characters.</span>
+                    <div class="field-error" id="password-error" style="display: none;"></div>
                 </div>
 
-                <!-- STUDENT FIELDS -->
-                <div id="student-fields" style="background: #f8fafc; border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 0.75rem; margin-bottom: 0.85rem;">
-                    <div style="font-weight: 700; font-size: 0.82rem; color: var(--brand-blue); margin-bottom: 6px;">Student Academic Details</div>
-                    <div class="grid-2" style="gap: 0.75rem;">
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label class="form-label" style="margin-bottom: 3px; font-size: 0.8rem;">AIUB Student ID</label>
-                            <input type="text" name="aiub_id" id="reg-aiub-id" class="form-control" placeholder="e.g. 22-22222-2" maxlength="10" pattern="^\d{2}-\d{5}-\d{1}$" title="Must be strictly 2 digits, hyphen, 5 digits, hyphen, 1 digit (e.g. 22-22222-2, numbers only)" required style="height: 36px;" oninput="formatAiubIdInput(this)">
-                            <div id="id-error" style="color: #dc2626; font-size: 0.75rem; margin-top: 2px; display: none;"></div>
+                <div id="student-fields" class="form-section" style="margin-top: 0.5rem;">
+                    <div class="grid-2" style="gap: 0 1rem;">
+                        <div class="form-group">
+                            <label class="form-label" for="reg-aiub-id">AIUB student ID</label>
+                            <input type="text" name="aiub_id" id="reg-aiub-id" class="form-control" placeholder="22-22222-2" inputmode="numeric" maxlength="10" pattern="^\d{2}-\d{5}-\d{1}$" title="Must be strictly 2 digits, hyphen, 5 digits, hyphen, 1 digit (e.g. 22-22222-2, numbers only)" required oninput="formatAiubIdInput(this)">
+                            <div class="field-error" id="id-error" style="display: none;"></div>
                         </div>
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label class="form-label" style="margin-bottom: 3px; font-size: 0.8rem;">Department / Major</label>
-                            <select name="department" class="form-control" style="height: 36px;">
+                        <div class="form-group">
+                            <label class="form-label" for="reg-dept">Department</label>
+                            <select name="department" id="reg-dept" class="form-control">
                                 <option value="CSE">Computer Science (CSE)</option>
                                 <option value="EEE">Electrical Engineering (EEE)</option>
                                 <option value="BBA">Business Administration (BBA)</option>
@@ -80,12 +78,10 @@
                     </div>
                 </div>
 
-                <!-- CLUB EXEC FIELDS -->
-                <div id="exec-fields" style="display: none; background: #f8fafc; border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 0.75rem; margin-bottom: 0.85rem;">
-                    <div style="font-weight: 700; font-size: 0.82rem; color: var(--brand-green); margin-bottom: 6px;">Club Executive Details</div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label class="form-label" style="margin-bottom: 3px; font-size: 0.8rem;">AIUB Club Name</label>
-                        <select name="club_name" class="form-control" style="height: 36px;">
+                <div id="exec-fields" class="form-section" style="display: none; margin-top: 0.5rem;">
+                    <div class="form-group">
+                        <label class="form-label" for="reg-club">Club</label>
+                        <select name="club_name" id="reg-club" class="form-control">
                             <option value="AIUB Computer Club (ACC)">AIUB Computer Club (ACC)</option>
                             <option value="IEEE AIUB Student Branch">IEEE AIUB Student Branch</option>
                             <option value="AIUB Drama Club">AIUB Drama Club</option>
@@ -95,23 +91,19 @@
                     </div>
                 </div>
 
-                <!-- RECRUITER FIELDS -->
-                <div id="recruiter-fields" style="display: none; background: #f8fafc; border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 0.75rem; margin-bottom: 0.85rem;">
-                    <div style="font-weight: 700; font-size: 0.82rem; color: var(--brand-purple); margin-bottom: 6px;">Corporate Recruiter Details</div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label class="form-label" style="margin-bottom: 3px; font-size: 0.8rem;">Hiring Company Name</label>
-                        <input type="text" name="company_name" class="form-control" placeholder="e.g. Brain Station 23, Enosis Solutions" style="height: 36px;">
+                <div id="recruiter-fields" class="form-section" style="display: none; margin-top: 0.5rem;">
+                    <div class="form-group">
+                        <label class="form-label" for="reg-company">Company</label>
+                        <input type="text" name="company_name" id="reg-company" class="form-control" autocomplete="organization" placeholder="Brain Station 23">
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 9px; margin-top: 4px;">
-                    Complete Registration
-                </button>
+                <button type="submit" class="btn btn-primary btn-block">Create account</button>
             </form>
+        </div>
 
-            <div style="margin-top: 1rem; text-align: center; font-size: 0.84rem; color: var(--text-muted);">
-                Already registered? <a href="index.php?controller=auth&action=login" style="font-weight: 700;">Sign In</a>
-            </div>
+        <div class="auth-footer">
+            Already have an account? <a class="fw-600" href="index.php?controller=auth&action=login">Sign in</a>
         </div>
     </div>
 

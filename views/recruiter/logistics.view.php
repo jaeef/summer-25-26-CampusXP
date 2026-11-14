@@ -1,73 +1,72 @@
 <?php require_once __DIR__ . '/../layouts/header.php'; ?>
 
-<div class="portal-header">
+<div class="page-header">
     <div>
-        <h1 class="portal-title">Corporate Campus Event & Logistics Requisitions</h1>
-        <p class="portal-sub">Request university technical equipment, networking booths, and presentation facilities for on-campus corporate hiring events.</p>
+        <h1 class="page-title">Equipment</h1>
+        <p class="page-sub">Request screens, booths, interview desks and power for on-campus hiring events. OSA approves each request.</p>
     </div>
-    <button class="btn btn-primary btn-sm" onclick="openModal('new-rec-logistics-modal')">+ Request Campus Logistics</button>
+    <button class="btn btn-primary btn-sm" onclick="openModal('new-rec-logistics-modal')">Request equipment</button>
 </div>
 
 <div class="glass-card">
     <div class="card-header">
-        <div class="card-title">My Corporate Logistics Requests (<?= count($requests) ?>)</div>
+        <h2 class="card-title">Your requests <span class="count-badge"><?= count($requests) ?></span></h2>
     </div>
 
     <?php if (empty($requests)): ?>
-        <p style="color: var(--text-muted); font-size: 0.88rem;">No logistics requisitions submitted yet. Click "+ Request Campus Logistics" to submit a request to the university administration.</p>
+        <div class="empty-state">No equipment requests yet.</div>
     <?php else: ?>
-        <table class="data-table">
+        <div class="table-wrap"><table class="data-table">
             <thead>
                 <tr>
-                    <th>Event / Drive Title</th>
-                    <th>Equipment Type</th>
-                    <th>Quantity</th>
-                    <th>Required Date</th>
-                    <th>Return Date</th>
-                    <th>Approval Status</th>
-                    <th>Admin Notes</th>
+                    <th>Event</th>
+                    <th>Equipment</th>
+                    <th>Qty</th>
+                    <th>Needed</th>
+                    <th>Return</th>
+                    <th>Status</th>
+                    <th>Notes</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($requests as $r): 
                     $st = $r['dispatch_status'];
-                    $badge = 'badge-student';
-                    if ($st === 'Approved') $badge = 'badge-exec';
-                    elseif ($st === 'Dispatched') $badge = 'badge-purple';
-                    elseif ($st === 'Rejected') $badge = 'badge-danger';
+                    $badge = '';
+                    if ($st === 'Approved') $badge = 'tag-success';
+                    elseif ($st === 'Dispatched') $badge = 'tag-info';
+                    elseif ($st === 'Rejected') $badge = 'tag-danger';
                 ?>
                     <tr>
-                        <td style="font-weight: 700;"><?= htmlspecialchars($r['event_name']) ?></td>
+                        <td class="fw-600"><?= htmlspecialchars($r['event_name']) ?></td>
                         <td><?= htmlspecialchars($r['item_type']) ?></td>
-                        <td><strong><?= $r['quantity'] ?> units</strong></td>
-                        <td><?= date('M d, Y', strtotime($r['needed_date'])) ?></td>
-                        <td><?= date('M d, Y', strtotime($r['return_date'])) ?></td>
+                        <td><?= $r['quantity'] ?></td>
+                        <td><?= !empty($r['needed_date']) ? date('M d, Y', strtotime($r['needed_date'])) : '—' ?></td>
+                        <td><?= !empty($r['return_date']) ? date('M d, Y', strtotime($r['return_date'])) : '—' ?></td>
                         <td><span class="badge-tag <?= $badge ?>"><?= htmlspecialchars($st) ?></span></td>
-                        <td style="font-size: 0.82rem; color: var(--text-muted);"><?= htmlspecialchars($r['notes'] ?: 'Standard request') ?></td>
+                        <td class="text-xs text-muted wrap"><?= htmlspecialchars($r['notes'] ?: '—') ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
-        </table>
+        </table></div>
     <?php endif; ?>
 </div>
 
-<!-- Modal -->
-<div class="modal-backdrop" id="new-rec-logistics-modal">
+<div class="modal-backdrop" id="new-rec-logistics-modal" role="dialog" aria-modal="true">
     <div class="modal-box">
         <div class="card-header">
-            <div class="card-title">Request Campus Logistics & Facilities</div>
+            <h3 class="card-title">Request equipment</h3>
             <button type="button" class="btn btn-outline btn-sm" onclick="closeModal('new-rec-logistics-modal')">Close</button>
         </div>
 
         <form action="index.php?controller=recruiter&action=request_logistics" method="POST">
             <div class="form-group">
-                <label class="form-label">Recruitment Event / Drive Title</label>
+                <label class="form-label">Event</label>
                 <input type="text" name="event_name" class="form-control" placeholder="e.g. Brain Station 23 On-Campus Tech Talk & Assessment" required>
             </div>
 
             <div class="grid-2">
                 <div class="form-group">
-                    <label class="form-label">Equipment Category</label>
+                    <label class="form-label">Equipment</label>
                     <select name="item_type" class="form-control">
                         <option value="Auditorium Presentation Screen & PA System">Auditorium Presentation Screen & PA System</option>
                         <option value="On-Campus Interview Desk & High-Speed LAN">On-Campus Interview Desk & High-Speed LAN</option>
@@ -76,7 +75,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Quantity Needed</label>
+                    <label class="form-label">Quantity</label>
                     <input type="number" min="1" max="50" name="quantity" class="form-control" value="1" required>
                 </div>
             </div>
@@ -87,18 +86,18 @@
                     <input type="date" name="needed_date" class="form-control" value="<?= date('Y-m-d', strtotime('+7 days')) ?>" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Conclusion / Return Date</label>
+                    <label class="form-label">Return by</label>
                     <input type="date" name="return_date" class="form-control" value="<?= date('Y-m-d', strtotime('+8 days')) ?>" required>
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Special Setup Notes / Technical Requirements</label>
-                <textarea name="notes" class="form-control" rows="3" placeholder="Specify technical requirements, presentation resolution, visitor pass counts..."></textarea>
+                <label class="form-label">Notes</label>
+                <textarea name="notes" class="form-control" rows="3" placeholder="Setup needs, screen resolution, visitor passes"></textarea>
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 10px;">
-                Submit Request to University Admin
+            <button type="submit" class="btn btn-primary btn-block">
+                Send request
             </button>
         </form>
     </div>

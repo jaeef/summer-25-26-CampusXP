@@ -79,9 +79,8 @@ class ExecutiveController {
         }
 
         $selected_drive_id = intval($_GET['drive_id'] ?? ($all_drives[0]['id'] ?? 0));
-        $pipeline = $selected_drive_id ? getClubApplicantsForKanban($conn, $selected_drive_id) : [
-            'Applied' => [], 'Under Review' => [], 'Interview' => [], 'Selected' => [], 'Rejected' => []
-        ];
+        // drive_id 0 = all drives; the model handles both cases
+        $pipeline = getClubApplicantsForKanban($conn, $selected_drive_id);
 
         require_once __DIR__ . '/../views/executive/kanban.view.php';
     }

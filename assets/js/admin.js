@@ -12,15 +12,11 @@ function selectBoothForAllocation(boothId, boothNumber, locationName, isOccupied
 
     if (isOccupied) {
         document.getElementById('booth-status-info').innerHTML = `
-            <div style="background: rgba(37,99,235,0.15); border:1px solid rgba(37,99,235,0.3); padding:10px; border-radius:6px; margin-bottom:1rem;">
-                Currently Assigned to: <strong>${assignedClub}</strong>
-            </div>
+            <div class="flash-alert flash-info">Assigned to <strong>${escapeHtml(assignedClub)}</strong></div>
         `;
     } else {
         document.getElementById('booth-status-info').innerHTML = `
-            <div style="background: rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); padding:10px; border-radius:6px; margin-bottom:1rem; color:#34D399;">
-                Status: <strong>Available for Assignment</strong>
-            </div>
+            <div class="flash-alert flash-success">This booth is available.</div>
         `;
     }
 

@@ -84,7 +84,7 @@ switch ($controller) {
                 StudentController::apply($conn);
                 break;
             case 'bookmark':
-                StudentController::bookmark($conn);
+                StudentController::ajaxBookmark($conn);
                 break;
             default:
                 StudentController::dashboard($conn);
@@ -109,14 +109,18 @@ switch ($controller) {
             case 'scheduler':
                 ExecutiveController::scheduler($conn);
                 break;
+            case 'create_slot':
             case 'generate_slots':
-                ExecutiveController::generateSlots($conn);
+                ExecutiveController::createSlot($conn);
+                break;
+            case 'assign_slot':
+                ExecutiveController::assignSlot($conn);
+                break;
+            case 'clear_slot':
+                ExecutiveController::clearSlot($conn);
                 break;
             case 'analytics':
                 ExecutiveController::analytics($conn);
-                break;
-            case 'evaluate':
-                ExecutiveController::evaluate($conn);
                 break;
             case 'logistics':
                 ExecutiveController::logistics($conn);

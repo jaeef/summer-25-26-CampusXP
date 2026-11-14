@@ -52,16 +52,15 @@ function addCustomField() {
     const div = document.createElement('div');
     div.className = 'custom-field-row';
     div.id = 'custom-field-' + fieldIndex;
-    div.style = 'display: flex; gap: 8px; align-items: center; background: #f8fafc; padding: 8px; border: 1px solid var(--border-light); border-radius: var(--radius-sm); margin-top: 4px;';
     
     div.innerHTML = `
-        <input type="text" name="custom_labels[]" class="form-control" placeholder="New Question / Field Prompt" pattern="^[a-zA-Z0-9\\s\\?\\.\\,\\:\\-\\(\\)\\'\\"]+$" title="Please enter a valid question prompt" required style="flex: 2;" oninput="updateCustomFieldsPreview()">
-        <select name="custom_types[]" class="form-control" style="flex: 1;" onchange="updateCustomFieldsPreview()">
-            <option value="text" selected>Short Text</option>
-            <option value="url">URL Link</option>
-            <option value="textarea">Long Paragraph</option>
+        <input type="text" name="custom_labels[]" class="form-control" placeholder="Question" aria-label="Question" pattern="^[a-zA-Z0-9\\s\\?\\.\\,\\:\\-\\(\\)\\'\\"]+$" title="Please enter a valid question prompt" required oninput="updateCustomFieldsPreview()">
+        <select name="custom_types[]" class="form-control" aria-label="Answer type" onchange="updateCustomFieldsPreview()">
+            <option value="text" selected>Short answer</option>
+            <option value="url">Link</option>
+            <option value="textarea">Paragraph</option>
         </select>
-        <button type="button" class="btn btn-outline btn-sm" onclick="removeCustomField('custom-field-${fieldIndex}')" style="color: #dc2626; padding: 4px 10px;">✕</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="removeCustomField('custom-field-${fieldIndex}')" aria-label="Remove question">Remove</button>
     `;
     
     container.appendChild(div);
@@ -85,14 +84,14 @@ function updateCustomFieldsPreview() {
     
     let html = '';
     for (let i = 0; i < labels.length; i++) {
-        const lbl = labels[i].value.trim() || 'Custom Prompt ' + (i + 1);
+        const lbl = labels[i].value.trim() || 'Question ' + (i + 1);
         const typ = types[i] ? types[i].value : 'text';
-        const typLabel = typ === 'url' ? 'URL Link' : (typ === 'textarea' ? 'Long Paragraph' : 'Short Text');
-        html += `<div>• ${escapeHtml(lbl)} [${typLabel}]</div>`;
+        const typLabel = typ === 'url' ? 'Link' : (typ === 'textarea' ? 'Paragraph' : 'Short answer');
+        html += `<div class="row-between list-item"><span>${escapeHtml(lbl)}</span><span class="text-xs text-dim">${typLabel}</span></div>`;
     }
 
     if (labels.length === 0) {
-        html = '<div style="color: var(--text-dim); font-style: italic;">No custom questions attached.</div>';
+        html = '<div class="text-dim">No screening questions added.</div>';
     }
 
     previewList.innerHTML = html;

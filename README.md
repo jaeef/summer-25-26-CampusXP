@@ -1,171 +1,335 @@
-# CampusXP: Smart Campus Opportunity & Recruitment Platform (PHP + MySQL, MVC)
+<div align="center">
 
-A unified 4-role campus recruitment, event radar, and placement management platform: **Student, Club Executive, Corporate Recruiter, Admin / Moderator**.
-Written in plain PHP 8.x with procedural `mysqli` and prepared statements. No frameworks, no Composer, no build step. Copy it into XAMPP and it runs.
+# CampusXP
 
----
+**Campus opportunities and recruitment for AIUB, in one place.**
 
-## 1. Install (XAMPP)
+Students find and apply to club drives and jobs. Clubs and recruiters run their whole hiring process. OSA approves and supports it all.
 
-1. Copy the `webproject` folder into `C:\xampp\htdocs\` so it becomes `htdocs/webproject/`.
-2. Start **Apache** and **MySQL** in the XAMPP Control Panel.
-3. Open `http://localhost/phpmyadmin` → **New** → create database `campusxp_aiub` (Collation: `utf8mb4_unicode_ci`).
-4. Click **Import** → Choose `database/schema.sql` → click **Go** / **Import**.
-5. Open `http://localhost/webproject/index.php` in your browser.
-6. Sign in using any of the pre-configured demo role accounts:
+![PHP 8](https://img.shields.io/badge/PHP-8.x-777BB4?style=for-the-badge&logo=php&logoColor=white)
+![MariaDB](https://img.shields.io/badge/MySQL%20%2F%20MariaDB-InnoDB-003545?style=for-the-badge&logo=mariadb&logoColor=white)
+![Apache](https://img.shields.io/badge/Apache-XAMPP-FB7A24?style=for-the-badge&logo=xampp&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-Vanilla-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![CSS3](https://img.shields.io/badge/CSS3-Custom-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 
-| Role | Default Email | Password | Primary Capabilities |
-| :--- | :--- | :--- | :--- |
-| **🎓 Student** | `student@aiub.edu` | `password123` | Profile & SOP Vault, Opportunity Radar, 1-Click Apply, Live Status Stepper |
-| **⚡ Club Executive** | `exec@aiub.edu` | `password123` | Publish Drives, Drag-and-Drop Kanban Board, 15-Min Interview Slot Generator |
-| **💼 Corporate Recruiter** | `recruiter@brainstation-23.com` | `password123` | Post Job Circulars, Dynamic Screening Forms, CGPA Talent Search, Shortlists |
-| **🛡️ Admin / Moderator** | `admin@aiub.edu` | `password123` | Moderate Pending Campaigns, Allocate Physical Booth Spots, Equipment Logistics |
+![Architecture](https://img.shields.io/badge/architecture-MVC-1A4D8F?style=flat-square)
+![Dependencies](https://img.shields.io/badge/dependencies-none-2EA44F?style=flat-square)
+![Roles](https://img.shields.io/badge/roles-4-0B1F3A?style=flat-square)
+![Course](https://img.shields.io/badge/AIUB-Web%20Technologies-B42318?style=flat-square)
 
-*(Everyone else can create a new account on the registration page with role-specific dynamic validation).*
+[Quick start](#-quick-start) · [Features](#-features) · [Architecture](#-architecture) · [Routes](#-routes) · [Database](#-database) · [Security](#-security)
+
+</div>
 
 ---
 
-## 2. Folder Structure
+## Table of contents
 
+- [Overview](#-overview)
+- [Quick start](#-quick-start)
+- [Demo accounts](#-demo-accounts)
+- [Features](#-features)
+- [Tech stack](#-tech-stack)
+- [Architecture](#-architecture)
+- [Project structure](#-project-structure)
+- [Routes](#-routes)
+- [Database](#-database)
+- [Security](#-security)
+- [Troubleshooting](#-troubleshooting)
+- [Credits](#-credits)
+
+---
+
+## 📌 Overview
+
+CampusXP replaces scattered Facebook posts, Google Forms and spreadsheets with one platform for four roles:
+
+| Role | Uses CampusXP to |
+| :--- | :--- |
+| **Student** | Find opportunities, apply with a saved profile, and track every application |
+| **Club executive** | Post drives, move applicants through stages, book interviews, request equipment |
+| **Recruiter** | Post jobs with screening questions, search students by CGPA and skills, send invitations |
+| **Admin (OSA)** | Approve drives and job posts, assign booths, dispatch equipment |
+
+It's plain PHP 8 with procedural `mysqli`: no framework, no Composer, no build step. Copy it into XAMPP and it runs.
+
+---
+
+## 🚀 Quick start
+
+**Requirements:** [XAMPP](https://www.apachefriends.org/) with PHP 8.x and MySQL / MariaDB. Developed and tested on PHP 8.2 and MariaDB 10.4.
+
+1. **Copy the project** into your XAMPP web root:
+
+   ```text
+   C:\xampp\htdocs\campusXp\
+   ```
+
+2. **Start Apache and MySQL** in the XAMPP Control Panel.
+
+3. **Create the database.** Open [phpMyAdmin](http://localhost/phpmyadmin), click **New**, and create `campusxp_aiub` with collation `utf8mb4_unicode_ci`.
+
+4. **Import the schema and demo data.** Select the database → **Import** → choose `database/schema.sql` → **Import**.
+
+   Or from a terminal:
+
+   ```bash
+   C:/xampp/mysql/bin/mysql.exe -u root campusxp_aiub < database/schema.sql
+   ```
+
+5. **Open the app** at <http://localhost/campusXp/index.php> and sign in with a [demo account](#-demo-accounts).
+
+> [!NOTE]
+> Connection settings are in `config/db.php`: host `localhost`, user `root`, empty password, database `campusxp_aiub`. If `campusxp_aiub` doesn't exist, it falls back to a legacy database named `unipulse_aiub`.
+
+> [!IMPORTANT]
+> **Upgrading an older database?** If you imported `schema.sql` before equipment return dates were added, re-import it or run:
+>
+> ```sql
+> ALTER TABLE logistics_requests ADD COLUMN date_return DATE NULL AFTER date_needed;
+> ```
+
+---
+
+## 🔑 Demo accounts
+
+Every demo account uses the password **`password123`**.
+
+| Role | Email |
+| :--- | :--- |
+| Student | `student@aiub.edu` |
+| Club executive | `exec@aiub.edu` |
+| Recruiter | `recruiter@brainstation-23.com` |
+| Admin (OSA) | `admin@aiub.edu` |
+
+Three more students, useful for testing Talent search: `ayesha@student.aiub.edu`, `mahmud@student.aiub.edu`, `nusrat@student.aiub.edu`.
+New users can register as a student, club executive or recruiter from the sign-up page.
+
+> [!WARNING]
+> These credentials are for local demos only. Change or remove them before deploying anywhere public.
+
+---
+
+## ✨ Features
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### Student
+- **Profile:** student ID (`XX-XXXXX-X`) and department are fixed at registration. CGPA, skills, CV link and a default statement can be edited.
+- **Apply with your profile:** the apply form is pre-filled from the profile and can be edited before submitting.
+- **Minimum CGPA check:** blocks applications below a job's required CGPA and explains why.
+- **One application per drive:** duplicate applications are rejected.
+- **Saved opportunities:** save or unsave instantly, then filter to saved items.
+- **Status tracker:** Applied → Review → Interview → Decision.
+
+</td>
+<td width="50%" valign="top">
+
+### Club executive
+- **Drives:** new drives go to OSA approval before students see them.
+- **Applicant board:** drag cards between Applied, Under review, Interview, Selected and Rejected. Filter by drive or show all drives.
+- **Interview slots:** create a slot for a room and time, book an applicant into it, or free it again.
+- **Equipment:** request sound systems, projectors and more, with needed and return dates.
+- **Analytics:** applicants by department, by CGPA range and by most-listed skills.
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+### Recruiter
+- **Job posts with screening questions:** link, short-answer or paragraph responses. Job posts also need OSA approval.
+- **Talent search:** filter students by department, minimum CGPA and skill.
+- **Shortlists and invitations:** save searches and send invitations that appear on the student's Opportunities page.
+- **Applicant board:** the same stage board as clubs, including screening answers.
+- **Equipment:** request screens, booths and interview desks for campus events.
+
+</td>
+<td width="50%" valign="top">
+
+### Admin (OSA)
+- **Approvals:** approve or reject club drives and corporate job posts.
+- **Booths:** assign campus booth spaces to clubs and companies.
+- **Equipment:** move requests through Requested → Approved → Dispatched → Returned, or reject them.
+- **Overview:** pending approvals, live drives and all registered accounts.
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🧰 Tech stack
+
+| Layer | Technology |
+| :--- | :--- |
+| Server | PHP 8.x, procedural `mysqli` with prepared statements |
+| Database | MySQL / MariaDB, InnoDB, `utf8mb4` |
+| Front end | Server-rendered PHP views, one hand-written stylesheet, vanilla JavaScript |
+| Fonts | Plus Jakarta Sans (Google Fonts) |
+| Hosting (local) | XAMPP (Apache + MariaDB) |
+
+---
+
+## 🏗 Architecture
+
+CampusXP follows a strict **Model–View–Controller** pattern behind a single front controller.
+
+```mermaid
+flowchart LR
+    B[Browser] -->|"index.php?controller=…&action=…"| R[index.php<br/>router]
+    R --> C[Controller<br/>role guard + validation]
+    C --> M[Model<br/>SQL queries]
+    M --> D[(MySQL / MariaDB)]
+    C --> V[View<br/>HTML templates]
+    V --> B
+    B -.->|fetch| A[ajax/bookmark.php]
+    A --> M
 ```
-webproject/
-├── index.php                  Front controller: the ONLY entry point (router)
-├── README.md                  Quick setup and architecture guide
-├── .gitignore                 Excludes temp logs, OS metadata and archives
+
+> [!TIP]
+> **The MVC rule:** a view never runs SQL, and a model never prints HTML. Controllers read `$_POST` / `$_GET`, sanitize and validate input, call the model, then `require` the view.
+
+---
+
+## 📁 Project structure
+
+<details>
+<summary><b>Show folder tree</b></summary>
+
+```text
+campusXp/
+├── index.php                   Front controller: the only entry point (router)
+├── README.md
+├── PRODUCT.md                  Product context: users, brand and design principles
 │
 ├── config/
-│   └── db.php                 DB connection (mysqli), cleanInput(), flash helpers, auth session
+│   └── db.php                  DB connection, cleanInput(), flash messages, session auth helpers
 │
 ├── database/
-│   └── schema.sql             MySQL 8.x InnoDB schema + demo seed data (13 tables)
+│   └── schema.sql              Schema + demo seed data (15 tables)
 │
-├── models/                    M — Every SQL prepared query lives here
-│   ├── UserModel.php          User authentication & registration
-│   ├── StudentModel.php       Profile Vault, CGPA checks, applications & bookmarks
-│   ├── DriveModel.php         Club & Corporate recruitment campaigns
-│   ├── ApplicationModel.php   Club & Corporate application status lifecycles
-│   ├── InterviewModel.php     15-minute venue interview timeslots
-│   ├── RecruiterModel.php     Dynamic form fields, candidate search & shortlists
-│   ├── LogisticsModel.php     Physical campus equipment requisitions
-│   └── AdminModel.php         Campaign moderation queue & booth allocations
+├── models/                     M: every SQL query lives here
+│   ├── UserModel.php           Accounts and registration
+│   ├── StudentModel.php        Profile, applications, saved opportunities
+│   ├── DriveModel.php          Club drives and corporate job posts
+│   ├── ApplicationModel.php    Club application pipeline and statuses
+│   ├── InterviewModel.php      Interview slots
+│   ├── RecruiterModel.php      Screening questions, applicants, talent search, shortlists, outreach
+│   ├── LogisticsModel.php      Equipment requests
+│   └── AdminModel.php          Approval queue, booths, admin metrics
 │
-├── controllers/               C — Request handling, cross-validation, auth guards
-│   ├── AuthController.php     Login, 30-day Remember-Me cookie, Register, Logout
-│   ├── StudentController.php  Radar view, 1-Click apply, CGPA threshold validation
-│   ├── ExecutiveController.php Drive publishing, Kanban updates, slot generation
-│   ├── RecruiterController.php Circulars, dynamic screening forms, talent filtering
-│   └── AdminController.php    Campaign moderation actions, booth spot allocation
+├── controllers/                C: request handling, validation, role guards
+│   ├── AuthController.php
+│   ├── StudentController.php
+│   ├── ExecutiveController.php
+│   ├── RecruiterController.php
+│   └── AdminController.php
 │
-├── views/                     V — Clean presentation layer (HTML & template variables)
-│   ├── layouts/               header.php, footer.php (shared glassmorphic shell)
-│   ├── auth/                  login.view.php, register.view.php
-│   ├── student/               dashboard.view.php, profile.view.php, applications.view.php
-│   ├── executive/             dashboard, kanban, scheduler, analytics, logistics
-│   ├── recruiter/             dashboard, create_drive, talent_search, shortlists, kanban
-│   └── admin/                 dashboard, moderation, booths, logistics
+├── views/                      V: presentation only
+│   ├── layouts/                header.php (sidebar app shell), footer.php
+│   ├── auth/                   login, register
+│   ├── student/                dashboard (Opportunities), applications, profile
+│   ├── executive/              dashboard, kanban, scheduler, logistics, analytics
+│   ├── recruiter/              dashboard, create_drive, kanban, talent_search, shortlists, outreach, logistics
+│   └── admin/                  dashboard, moderation, booths, logistics
 │
-├── ajax/                      Asynchronous JSON endpoints
-│   ├── search.php             Live debounced search for opportunities & talent
-│   └── bookmark.php           Instant 1-click opportunity bookmark toggle
+├── ajax/
+│   └── bookmark.php            Save / unsave an opportunity (signed-in students only)
 │
-└── assets/
-    ├── css/style.css          Vanilla CSS glassmorphism design system
-    └── js/                    Client-side validation, modals, Kanban & form builders
-        ├── main.js            Modal controllers, tab switchers, live search debounce
-        ├── student.js         1-Click Apply auto-filler & CGPA ineligibility pop-up
-        └── recruiter.js       Dynamic screening form questions builder
+├── assets/
+│   ├── css/style.css           AIUB navy palette, sidebar layout, shared components
+│   └── js/
+│       ├── main.js             Modals, toast messages, HTML escaping
+│       ├── student.js          Filters, apply pre-fill, CGPA check, save toggle, profile preview
+│       ├── executive.js        Drag-and-drop applicant board
+│       ├── recruiter.js        Screening question builder, job title validation
+│       └── admin.js            Booth details modal
+│
+└── docs/                       Project proposal and course outcome (CO3, CO4) documents
 ```
 
-**The MVC Rule Used Throughout:** A view never executes an SQL query, and a model never prints HTML. The controller sits in the middle: it receives `$_POST`/`$_GET`, applies strict sanitization and validation, invokes the model's prepared statements, and `require`s the presentation view.
+</details>
 
 ---
 
-## 3. How the Router Works
+## 🧭 Routes
 
-Every URL routes through the single entry point (`index.php`):
+Every request goes through `index.php?controller=<module>&action=<action>`.
 
-```
-index.php?controller=<module>&action=<action_name>&id=<optional_id>
-```
+<details>
+<summary><b>Show all routes</b></summary>
 
-| Route URL | Handled By | What Happens |
-| :--- | :--- | :--- |
-| `index.php?controller=auth&action=login` | `AuthController::login` | Renders sign-in form & handles 30-day Remember-Me cookie |
-| `index.php?controller=auth&action=register` | `AuthController::register` | Dynamic role registration (Student / Exec / Recruiter) |
-| `index.php?controller=student&action=dashboard` | `StudentController::dashboard` | Loads live Opportunity Radar & saved bookmarks |
-| `index.php?controller=student&action=apply` | `StudentController::apply` | Validates CGPA cap, answers, and saves application |
-| `index.php?controller=executive&action=kanban` | `ExecutiveController::kanban` | Renders 5-column drag-and-drop candidate pipeline |
-| `index.php?controller=executive&action=scheduler` | `ExecutiveController::scheduler`| Batch-generates 15-minute interview venue slots |
-| `index.php?controller=recruiter&action=talent_search`| `RecruiterController::talentSearch`| Filters verified AIUB student talent by CGPA & department |
-| `index.php?controller=admin&action=moderation` | `AdminController::moderation` | Reviews pending campaigns with moderation feedback notes |
-| `index.php?controller=admin&action=booths` | `AdminController::booths` | Assigns physical AIUB booth numbers (e.g. Annex 1 Plaza) |
-| `index.php?controller=auth&action=logout` | `AuthController::logout` | Terminates session and redirects to sign-in |
+| Role | `controller=` | Pages | Form / POST actions |
+| :--- | :--- | :--- | :--- |
+| Everyone | `auth` | `login`, `register` | `logout` |
+| Student | `student` | `dashboard` (Opportunities), `applications`, `profile` | `apply`, `update_profile` |
+| Club executive | `executive` | `dashboard`, `kanban`, `scheduler`, `logistics`, `analytics` | `create_drive`, `update_status`, `create_slot`, `assign_slot`, `clear_slot`, `request_logistics` |
+| Recruiter | `recruiter` | `dashboard`, `create_drive`, `kanban`, `talent_search`, `shortlists`, `outreach`, `logistics` | `save_drive`, `update_status`, `create_bucket`, `send_outreach`, `request_logistics` |
+| Admin | `admin` | `dashboard`, `moderation`, `booths`, `logistics` | `moderate_action`, `booth_action`, `logistics_action` |
 
-Each controller enforces a private **Role Guard** (e.g., `checkStudentAuth()`, `checkExecAuth()`, `checkRecruiterAuth()`, `checkAdminAuth()`). Unauthorized role access attempts are blocked and redirected to login.
+</details>
+
+- An unknown action falls back to that role's dashboard.
+- Each controller has a role guard: `checkStudentAuth()`, `checkExecAuth()`, `checkRecruiterAuth()` or `checkAdminAuth()`. Signed-out or wrong-role requests are redirected to sign-in.
 
 ---
 
-## 4. Key Architectural Features
+## 🗄 Database
 
-### 🎓 1. Student Portal
-- **Unified Profile & SOP Vault:** AIUB Student ID (`XX-XXXXX-X`) and Department are permanently locked as verified credentials. Students maintain a cloud resume link and Statement of Purpose (SOP).
-- **1-Click Application Auto-Fill:** Clicking apply instantly populates the modal with vault credentials.
-- **Minimum CGPA Protection:** If a corporate circular requires a minimum CGPA (e.g. `3.00`) and the student's CGPA is below the threshold, an instant warning modal pops up and blocks ineligible submissions.
-- **Duplicate Prevention:** Multi-apply locks prevent redundant applications to the same drive.
+15 InnoDB tables, created and seeded by `database/schema.sql`.
 
-### ⚡ 2. Club Executive Portal
-- **Recruitment Campaigns:** Create recruitment drives held in pending moderation queue for OSA review.
-- **Visual Kanban Pipeline:** Candidate cards move across *Applied ➔ Under Review ➔ Interview ➔ Selected ➔ Rejected* stages.
-- **Interview Auto-Scheduler:** Automatically generates 15-minute timeslots between start and end times for specific campus rooms.
-- **Demographic Analytics:** Real-time statistical charts for applicant CGPA distributions and member selection rates.
+<details>
+<summary><b>Show all tables</b></summary>
 
-### 💼 3. Corporate Recruiter Portal
-- **Dynamic Form Builder:** Build custom screening questions (Portfolio URL, Text prompt, Long Paragraph) saved and rendered dynamically.
-- **Strict Position Title Validation:** Recruiter position titles are strictly validated to alphabetic strings (`a-z, A-Z`).
-- **Verified Talent Pool Search:** Filter students matching `CGPA >= X.XX` and specific engineering/business departments.
-- **Candidate Shortlist Buckets & Direct Alerts:** Save candidates into target buckets and dispatch direct interview invitations.
+| Table | Purpose |
+| :--- | :--- |
+| `users` | Accounts, roles and password hashes |
+| `student_profiles` | Student ID, department, CGPA, skills, CV link, default statement |
+| `opportunity_bookmarks` | Opportunities a student has saved |
+| `club_drives` | Club drives and events, with approval status |
+| `club_applications` | Applications to club drives and their pipeline stage |
+| `interview_slots` | Interview room and time slots, and who is booked |
+| `candidate_evaluations` | Applicant ratings and remarks *(table exists, not used by the app yet)* |
+| `corporate_drives` | Recruiter job posts with minimum CGPA |
+| `custom_form_fields` | Screening questions attached to job posts |
+| `corporate_applications` | Applications to job posts, including screening answers |
+| `recruiter_shortlists` | Saved talent searches |
+| `recruiter_outreach_logs` | Invitations sent to students |
+| `approval_requests` | OSA approval queue |
+| `venue_booth_allocations` | Booth assignments |
+| `logistics_requests` | Equipment requests with needed and return dates |
 
-### 🛡️ 4. University Administrator Portal (OSA)
-- **Two-Tier Event Moderation:** Moderate club and corporate campaigns before publishing them to the student radar.
-- **Campus Booth Allocator:** Map physical AIUB campus spots (Annex 1 Plaza, D-Building Canopy) to approved event drives.
-- **Logistics Requisitions:** Review and track physical campus equipment (microphones, sound systems, tables).
-
----
-
-## 5. Security & Validation Highlights
-
-- **SQL Injection Prevention:** 100% of database queries use procedural `mysqli_prepare()`, `mysqli_stmt_bind_param()`, and `mysqli_stmt_execute()`.
-- **Cross-Site Scripting (XSS):** Global sanitization via `cleanInput()` and `htmlspecialchars()` output escaping.
-- **Password Security:** One-way password hashing using PHP `password_hash($pass, PASSWORD_BCRYPT)`.
-- **Cookie Security:** Persistent "Remember Me" cookie configured with `HttpOnly` security flags.
-- **AIUB Student ID Format:** Strict `XX-XXXXX-X` (2-5-1 digits) formatting with real-time numeric masking and duplicate ID blocking.
-- **Native Data Validation:** URL inputs verified using PHP native `filter_var(..., FILTER_VALIDATE_URL)`.
+</details>
 
 ---
 
-## 6. Database Schema (13 Tables)
+## 🔒 Security
 
-| Table | Purpose | Managed Entity |
-| :--- | :--- | :--- |
-| `users` | Accounts & authentication credentials | Core Auth |
-| `student_profiles` | AIUB ID, CGPA, Resume URL, Default SOP | Student Entity 1 |
-| `opportunity_bookmarks` | Pinned drives and events | Student Entity 2 |
-| `club_drives` | Club recruitment campaigns & deadlines | Executive Entity 4 |
-| `club_applications` | Candidate applications & Kanban status | Student Entity 3 |
-| `interview_slots` | 15-minute room venue timeslots | Executive Entity 5 |
-| `candidate_evaluations` | Star ratings (1-5) and fit remarks | Executive Entity 6 |
-| `corporate_drives` | Job circulars with CGPA caps | Recruiter Entity 7 |
-| `custom_form_fields` | Dynamic screening question schema | Recruiter Entity 7 Component |
-| `corporate_applications`| Screening responses & candidate CVs | Recruiter Entity 7 Component |
-| `recruiter_shortlists` | Filtered talent candidate buckets | Recruiter Entity 8 |
-| `recruiter_outreach_logs`| Direct dashboard alerts sent to students | Recruiter Entity 9 |
-| `approval_requests` | Two-tier moderation review queue | Admin Entity 10 |
-| `venue_booth_allocations`| Physical AIUB booth reservations | Admin Entity 11 |
-| `logistics_requests` | Event equipment inventory requisitions | Admin Entity 12 |
+| Concern | How it's handled |
+| :--- | :--- |
+| SQL injection | Every query that uses user input goes through `mysqli_prepare()` + `mysqli_stmt_bind_param()`. Queries with no user input use `mysqli_query()`. |
+| XSS | Input is cleaned with `cleanInput()`. Output is escaped with `htmlspecialchars()`. |
+| Passwords | `password_hash(..., PASSWORD_BCRYPT)` to store, `password_verify()` to check. |
+| Access control | Role guards on every controller; `ajax/bookmark.php` accepts signed-in students only. |
+| Remember me | Remembers the email for 30 days in an `HttpOnly` cookie. It doesn't keep the user signed in. |
+| Input validation | Student ID must match `XX-XXXXX-X`. Duplicate IDs and emails are rejected. Link answers are checked with `filter_var(..., FILTER_VALIDATE_URL)`. |
 
 ---
 
-## 7. License & Credits
+## 🛠 Troubleshooting
 
-Developed for the **Web Technologies** course at the **American International University - Bangladesh (AIUB)**.
-Created by the **CampusXP Development Team** (Academic Year 2026).
+| Problem | Fix |
+| :--- | :--- |
+| `Database Connection failed` | Start MySQL in XAMPP and check that the `campusxp_aiub` database exists. |
+| Blank page or 404 | Check the folder is `htdocs/campusXp/` and open `index.php` directly. |
+| Can't sign in with a demo account | Re-import `database/schema.sql`. The demo users are created by the seed data. |
+| Equipment pages error on `date_return` | Run the `ALTER TABLE` in [Quick start](#-quick-start), or re-import the schema. |
+
+---
+
+## 🎓 Credits
+
+Developed for the **Web Technologies** course at the **American International University – Bangladesh (AIUB)** by the **CampusXP Development Team**, Academic Year 2026.

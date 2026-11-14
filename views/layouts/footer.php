@@ -1,4 +1,8 @@
     </main>
+<?php if (!empty($nav)): ?>
+    </div><!-- /.app-main -->
+</div><!-- /.app-shell -->
+<?php endif; ?>
 
     <!-- Global & Role-Specific Scripts -->
     <script src="assets/js/main.js"></script>
