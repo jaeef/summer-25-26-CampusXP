@@ -1,13 +1,11 @@
 <?php require_once __DIR__ . '/../layouts/header.php'; ?>
 
-<div class="portal-header">
+<div class="page-header">
     <div>
-        <h1 class="portal-title">Application Progress Tracker</h1>
-        <p class="portal-sub">Real-time status tracking for your submitted club and corporate applications.</p>
+        <h1 class="page-title">Applications</h1>
+        <p class="page-sub">Where each of your club and corporate applications stands.</p>
     </div>
-    <div>
-        <a href="index.php?controller=student&action=dashboard" class="btn btn-primary btn-sm">Browse Opportunities</a>
-    </div>
+    <a href="index.php?controller=student&action=dashboard" class="btn btn-outline btn-sm">Browse opportunities</a>
 </div>
 
 <?php
@@ -24,36 +22,23 @@ foreach (array_merge($corp_apps, $club_apps) as $item) {
 }
 ?>
 
-<!-- Overview Metrics -->
-<div class="grid-4" style="margin-bottom: 1.5rem;">
-    <div class="glass-card" style="text-align: center; padding: 1rem;">
-        <div style="font-size: 1.6rem; font-weight: 700; color: var(--brand-blue);"><?= $total_apps_count ?></div>
-        <div style="font-size: 0.8rem; color: var(--text-muted);">Total Applications</div>
-    </div>
-    <div class="glass-card" style="text-align: center; padding: 1rem;">
-        <div style="font-size: 1.6rem; font-weight: 700; color: #b45309;"><?= $in_review_count ?></div>
-        <div style="font-size: 0.8rem; color: var(--text-muted);">Under Review</div>
-    </div>
-    <div class="glass-card" style="text-align: center; padding: 1rem;">
-        <div style="font-size: 1.6rem; font-weight: 700; color: var(--brand-purple);"><?= $interview_count ?></div>
-        <div style="font-size: 0.8rem; color: var(--text-muted);">Interview Scheduled</div>
-    </div>
-    <div class="glass-card" style="text-align: center; padding: 1rem;">
-        <div style="font-size: 1.6rem; font-weight: 700; color: var(--brand-green);"><?= $selected_count ?></div>
-        <div style="font-size: 0.8rem; color: var(--text-muted);">Selected</div>
-    </div>
+<div class="stats">
+    <div class="stat"><span class="stat-value"><?= $total_apps_count ?></span><span class="stat-label">Total</span></div>
+    <div class="stat"><span class="stat-value"><?= $in_review_count ?></span><span class="stat-label">Under review</span></div>
+    <div class="stat"><span class="stat-value"><?= $interview_count ?></span><span class="stat-label">Interview</span></div>
+    <div class="stat"><span class="stat-value"><?= $selected_count ?></span><span class="stat-label">Selected</span></div>
 </div>
 
 <!-- Corporate Applications -->
-<div class="glass-card" style="margin-bottom: 1.5rem;">
+<section class="section">
     <div class="card-header">
-        <div class="card-title">Corporate Applications (<?= count($corp_apps) ?>)</div>
+        <h2 class="card-title">Corporate applications <span class="count-badge"><?= count($corp_apps) ?></span></h2>
     </div>
 
     <?php if (empty($corp_apps)): ?>
-        <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0.5rem 0;">No corporate applications submitted yet.</p>
+        <div class="glass-card empty-state">No corporate applications yet. <a href="index.php?controller=student&action=dashboard">Browse opportunities</a></div>
     <?php else: ?>
-        <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div class="stack-lg">
             <?php foreach ($corp_apps as $capp): 
                 $cstatus = $capp['status'] ?? 'Applied';
                 $cprogress = '0%';
@@ -86,34 +71,33 @@ foreach (array_merge($corp_apps, $club_apps) as $item) {
                 <div class="tracker-card">
                     <div class="tracker-card-header">
                         <div>
-                            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                                <strong style="font-size: 1rem; color: var(--text-main);"><?= htmlspecialchars($capp['drive_title']) ?></strong>
-                                <span class="badge-tag badge-recruiter"><?= htmlspecialchars($capp['company_name']) ?></span>
+                            <div class="row">
+                                <strong style="font-size: 1rem;"><?= htmlspecialchars($capp['drive_title']) ?></strong>
+                                <span class="text-sm text-muted">· <?= htmlspecialchars($capp['company_name']) ?></span>
                             </div>
                             <div class="tracker-meta-row">
-                                <span>Role: <strong><?= htmlspecialchars($capp['applied_role']) ?></strong></span>
-                                <span>|</span>
-                                <span>Submitted: <?= date('M d, Y - h:i A', strtotime($capp['applied_at'])) ?></span>
+                                <span>Role <strong><?= htmlspecialchars($capp['applied_role']) ?></strong></span>
+                                <span class="text-dim">·</span>
+                                <span>Submitted <?= date('M d, Y, h:i A', strtotime($capp['applied_at'])) ?></span>
                             </div>
                         </div>
 
                         <div>
                             <?php if ($cstatus === 'Selected'): ?>
-                                <span class="badge-tag badge-exec">Selected</span>
+                                <span class="badge-tag tag-success">Selected</span>
                             <?php elseif ($cstatus === 'Rejected'): ?>
-                                <span class="badge-tag badge-danger">Not Selected</span>
+                                <span class="badge-tag tag-danger">Not selected</span>
                             <?php elseif ($cstatus === 'Interview'): ?>
-                                <span class="badge-tag badge-admin">Interview</span>
+                                <span class="badge-tag tag-info">Interview</span>
                             <?php elseif ($cstatus === 'Under Review'): ?>
-                                <span class="badge-tag badge-gold">Under Review</span>
+                                <span class="badge-tag tag-warning">Under review</span>
                             <?php else: ?>
-                                <span class="badge-tag badge-student">Applied</span>
+                                <span class="badge-tag">Applied</span>
                             <?php endif; ?>
                         </div>
                     </div>
 
-                    <!-- Minimal Linear Progress Stepper -->
-                    <div class="linear-trackbar-wrapper">
+                    <div class="linear-trackbar-wrapper" style="margin-bottom: 0;">
                         <div class="linear-stepper">
                             <div class="linear-stepper-line">
                                 <div class="linear-stepper-progress" style="width: <?= $cprogress ?>;"></div>
@@ -144,18 +128,18 @@ foreach (array_merge($corp_apps, $club_apps) as $item) {
             <?php endforeach; ?>
         </div>
     <?php endif; ?>
-</div>
+</section>
 
 <!-- Club Applications -->
-<div class="glass-card" style="margin-bottom: 2rem;">
+<section class="section">
     <div class="card-header">
-        <div class="card-title">Club Applications (<?= count($club_apps) ?>)</div>
+        <h2 class="card-title">Club applications <span class="count-badge"><?= count($club_apps) ?></span></h2>
     </div>
 
     <?php if (empty($club_apps)): ?>
-        <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0.5rem 0;">No club applications submitted yet.</p>
+        <div class="glass-card empty-state">No club applications yet. <a href="index.php?controller=student&action=dashboard">Browse opportunities</a></div>
     <?php else: ?>
-        <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div class="stack-lg">
             <?php foreach ($club_apps as $app): 
                 $status = $app['status'] ?? 'Applied';
                 $progress = '0%';
@@ -188,34 +172,33 @@ foreach (array_merge($corp_apps, $club_apps) as $item) {
                 <div class="tracker-card">
                     <div class="tracker-card-header">
                         <div>
-                            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                                <strong style="font-size: 1rem; color: var(--text-main);"><?= htmlspecialchars($app['drive_title']) ?></strong>
-                                <span class="badge-tag badge-student"><?= htmlspecialchars($app['club_name']) ?></span>
+                            <div class="row">
+                                <strong style="font-size: 1rem;"><?= htmlspecialchars($app['drive_title']) ?></strong>
+                                <span class="text-sm text-muted">· <?= htmlspecialchars($app['club_name']) ?></span>
                             </div>
                             <div class="tracker-meta-row">
-                                <span>Role: <strong><?= htmlspecialchars($app['applied_role']) ?></strong></span>
-                                <span>|</span>
-                                <span>Submitted: <?= date('M d, Y - h:i A', strtotime($app['applied_at'])) ?></span>
+                                <span>Role <strong><?= htmlspecialchars($app['applied_role']) ?></strong></span>
+                                <span class="text-dim">·</span>
+                                <span>Submitted <?= date('M d, Y, h:i A', strtotime($app['applied_at'])) ?></span>
                             </div>
                         </div>
 
                         <div>
                             <?php if ($status === 'Selected'): ?>
-                                <span class="badge-tag badge-exec">Selected</span>
+                                <span class="badge-tag tag-success">Selected</span>
                             <?php elseif ($status === 'Rejected'): ?>
-                                <span class="badge-tag badge-danger">Not Selected</span>
+                                <span class="badge-tag tag-danger">Not selected</span>
                             <?php elseif ($status === 'Interview'): ?>
-                                <span class="badge-tag badge-admin">Interview</span>
+                                <span class="badge-tag tag-info">Interview</span>
                             <?php elseif ($status === 'Under Review'): ?>
-                                <span class="badge-tag badge-gold">Under Review</span>
+                                <span class="badge-tag tag-warning">Under review</span>
                             <?php else: ?>
-                                <span class="badge-tag badge-student">Applied</span>
+                                <span class="badge-tag">Applied</span>
                             <?php endif; ?>
                         </div>
                     </div>
 
-                    <!-- Minimal Linear Progress Stepper -->
-                    <div class="linear-trackbar-wrapper">
+                    <div class="linear-trackbar-wrapper" style="margin-bottom: 0;">
                         <div class="linear-stepper">
                             <div class="linear-stepper-line">
                                 <div class="linear-stepper-progress" style="width: <?= $progress ?>;"></div>
@@ -246,7 +229,7 @@ foreach (array_merge($corp_apps, $club_apps) as $item) {
             <?php endforeach; ?>
         </div>
     <?php endif; ?>
-</div>
+</section>
 
 <?php require_once __DIR__ . '/../layouts/footer.php'; ?>
 

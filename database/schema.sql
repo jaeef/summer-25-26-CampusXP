@@ -194,6 +194,7 @@ CREATE TABLE IF NOT EXISTS `logistics_requests` (
   `quantity` INT NOT NULL,
   `purpose` VARCHAR(255) NULL,
   `date_needed` DATE NULL,
+  `date_return` DATE NULL,
   `dispatch_status` ENUM('Requested','Approved','Dispatched','Returned','Rejected') DEFAULT 'Requested',
   `admin_notes` TEXT NULL,
   `requested_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -281,8 +282,8 @@ INSERT INTO `venue_booth_allocations` (`id`, `approval_id`, `campus_location`, `
 (4, NULL, 'Annex 2 Court', 'Booth B-04', NULL, '2026-09-04', 0);
 
 -- 12. Logistics Requests
-INSERT INTO `logistics_requests` (`id`, `approval_id`, `club_or_org`, `item_name`, `quantity`, `dispatch_status`) VALUES
-(1, 1, 'AIUB Computer Club', 'Sound System & 2 Wireless Mics', 1, 'Dispatched'),
-(2, 1, 'AIUB Computer Club', 'Display Table & 6 Chairs', 4, 'Dispatched'),
-(3, 2, 'IEEE AIUB Branch', 'Projector Screen & Extension Cable', 2, 'Approved'),
-(4, NULL, 'AIUB Drama Club', 'Stage Spotlights & Sound Mixer', 1, 'Requested');
+INSERT INTO `logistics_requests` (`id`, `approval_id`, `user_id`, `club_or_org`, `item_name`, `quantity`, `purpose`, `date_needed`, `date_return`, `dispatch_status`) VALUES
+(1, 1, 2, 'AIUB Computer Club', 'Sound System & 2 Wireless Mics', 1, 'Executive Recruitment Drive 2026', '2026-09-14', '2026-09-16', 'Dispatched'),
+(2, 1, 2, 'AIUB Computer Club', 'Display Table & 6 Chairs', 4, 'Executive Recruitment Drive 2026', '2026-09-14', '2026-09-16', 'Dispatched'),
+(3, 2, 2, 'IEEE AIUB Branch', 'Projector Screen & Extension Cable', 2, 'Hands-on IoT & Microcontrollers Workshop', '2026-09-09', '2026-09-11', 'Approved'),
+(4, NULL, 2, 'AIUB Drama Club', 'Stage Spotlights & Sound Mixer', 1, 'Annual Stage Production Auditions', '2026-09-19', '2026-09-21', 'Requested');

@@ -16,8 +16,8 @@ function kanbanAllowDrop(event) {
     event.dataTransfer.dropEffect = "move";
     var colList = event.currentTarget;
     if (colList) {
-        colList.style.background = '#e0f2fe';
-        colList.style.outline = '2px dashed #0284c7';
+        colList.style.background = 'var(--primary-soft)';
+        colList.style.outline = '2px dashed var(--primary)';
     }
 }
 

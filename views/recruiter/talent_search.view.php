@@ -1,27 +1,23 @@
 <?php require_once __DIR__ . '/../layouts/header.php'; ?>
 
-<div class="portal-header">
+<div class="page-header">
     <div>
-        <h1 class="portal-title">AIUB Verified Student Talent Search</h1>
-        <p class="portal-sub">Query student talent by academic criteria, CGPA threshold, and declared technical skill competencies.</p>
+        <h1 class="page-title">Talent search</h1>
+        <p class="page-sub">Find AIUB students by department, CGPA and skills, then invite them to apply.</p>
     </div>
-    <div style="display: flex; gap: 8px;">
-        <button class="btn btn-primary btn-sm" onclick="openModal('new-bucket-modal')">+ Create Shortlist Bucket</button>
-        <a href="index.php?controller=recruiter&action=shortlists" class="btn btn-outline btn-sm">View Buckets</a>
-    </div>
+    <button class="btn btn-outline btn-sm" onclick="openModal('new-bucket-modal')">New shortlist</button>
 </div>
 
-<!-- Search Filter Card -->
-<div class="glass-card" style="margin-bottom: 2rem;">
+<div class="glass-card section">
     <form method="GET" action="index.php">
         <input type="hidden" name="controller" value="recruiter">
         <input type="hidden" name="action" value="talent_search">
 
-        <div class="grid-3" style="align-items: flex-end;">
-            <div class="form-group" style="margin-bottom: 0;">
-                <label class="form-label">Department / Major</label>
-                <select name="dept" class="form-control">
-                    <option value="">All Departments</option>
+        <div class="grid-3" style="align-items: end;">
+            <div class="form-group mb-0">
+                <label class="form-label" for="f-dept">Department</label>
+                <select name="dept" id="f-dept" class="form-control">
+                    <option value="">All departments</option>
                     <option value="CSE" <?= $filter_dept === 'CSE' ? 'selected' : '' ?>>Computer Science (CSE)</option>
                     <option value="EEE" <?= $filter_dept === 'EEE' ? 'selected' : '' ?>>Electrical Engineering (EEE)</option>
                     <option value="BBA" <?= $filter_dept === 'BBA' ? 'selected' : '' ?>>Business Administration (BBA)</option>
@@ -29,86 +25,85 @@
                 </select>
             </div>
 
-            <div class="form-group" style="margin-bottom: 0;">
-                <label class="form-label">Minimum CGPA (0.00 - 4.00)</label>
-                <input type="number" step="0.01" min="0.00" max="4.00" name="min_cgpa" class="form-control" value="<?= htmlspecialchars($filter_cgpa ?: '') ?>" placeholder="e.g. 3.50">
+            <div class="form-group mb-0">
+                <label class="form-label" for="f-cgpa">Minimum CGPA</label>
+                <input type="number" step="0.01" min="0.00" max="4.00" name="min_cgpa" id="f-cgpa" class="form-control" value="<?= htmlspecialchars($filter_cgpa ?: '') ?>" placeholder="e.g. 3.50">
             </div>
 
-            <div class="form-group" style="margin-bottom: 0;">
-                <label class="form-label">Technical Skill Keyword</label>
-                <input type="text" name="skill" class="form-control" value="<?= htmlspecialchars($filter_skill ?: '') ?>" placeholder="e.g. PHP, React, Python, SQL">
+            <div class="form-group mb-0">
+                <label class="form-label" for="f-skill">Skill</label>
+                <input type="text" name="skill" id="f-skill" class="form-control" value="<?= htmlspecialchars($filter_skill ?: '') ?>" placeholder="e.g. PHP, React, Python, SQL">
             </div>
         </div>
 
-        <div style="margin-top: 1rem; display: flex; gap: 8px; justify-content: flex-end;">
-            <a href="index.php?controller=recruiter&action=talent_search" class="btn btn-outline btn-sm">Reset Filters</a>
-            <button type="submit" class="btn btn-primary btn-sm">Apply Talent Filter</button>
+        <div class="row mt-2" style="justify-content: flex-end;">
+            <a href="index.php?controller=recruiter&action=talent_search" class="btn btn-outline btn-sm">Clear</a>
+            <button type="submit" class="btn btn-primary btn-sm">Search</button>
         </div>
     </form>
 </div>
 
-<!-- Results Table -->
 <div class="glass-card">
     <div class="card-header">
-        <div class="card-title">Matching Candidate Pool (<?= count($candidates) ?> Found)</div>
+        <h2 class="card-title">Results <span class="count-badge"><?= count($candidates) ?></span></h2>
     </div>
 
     <?php if (empty($candidates)): ?>
-        <p style="color: var(--text-muted); font-size: 0.88rem;">No student profiles match your filter criteria. Try broadening your CGPA or department filters.</p>
+        <div class="empty-state">No students match these filters. Try a lower CGPA or a different department.</div>
     <?php else: ?>
-        <table class="data-table">
+        <div class="table-wrap"><table class="data-table">
             <thead>
                 <tr>
-                    <th>Student Name</th>
-                    <th>AIUB ID</th>
+                    <th>Name</th>
+                    <th>Student ID</th>
                     <th>Department</th>
                     <th>CGPA</th>
-                    <th>Declared Skills</th>
-                    <th>Resume Link</th>
-                    <th>Outreach Action</th>
+                    <th>Skills</th>
+                    <th>CV</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($candidates as $cand): ?>
                     <tr>
-                        <td style="font-weight: 700; color: var(--text-main);"><?= htmlspecialchars($cand['full_name']) ?></td>
+                        <td class="fw-600"><?= htmlspecialchars($cand['full_name']) ?></td>
                         <td><?= htmlspecialchars($cand['aiub_id']) ?></td>
-                        <td><span class="badge-tag badge-student"><?= htmlspecialchars($cand['department']) ?></span></td>
-                        <td><strong style="color: var(--brand-blue);"><?= htmlspecialchars($cand['cgpa'] ? number_format((float)$cand['cgpa'], 2) : '0.00') ?></strong></td>
-                        <td>
+                        <td><?= htmlspecialchars($cand['department']) ?></td>
+                        <td><?= htmlspecialchars($cand['cgpa'] ? number_format((float)$cand['cgpa'], 2) : '0.00') ?></td>
+                        <td class="wrap">
                             <?php 
                             $skills = !empty($cand['skills']) ? explode(',', $cand['skills']) : [];
                             foreach (array_slice($skills, 0, 3) as $sk): 
                                 $sk = trim($sk);
                                 if (empty($sk)) continue;
                             ?>
-                                <span class="badge-tag" style="background: #eff6ff; color: var(--brand-blue); font-size: 0.72rem;"><?= htmlspecialchars($sk) ?></span>
+                                <span class="badge-tag"><?= htmlspecialchars($sk) ?></span>
                             <?php endforeach; ?>
                         </td>
                         <td>
                             <?php if (!empty($cand['cv_url'])): ?>
-                                <a href="<?= htmlspecialchars($cand['cv_url']) ?>" target="_blank" style="font-size: 0.82rem; font-weight: 600;">View CV</a>
+                                <a href="<?= htmlspecialchars($cand['cv_url']) ?>" target="_blank" rel="noopener" class="fw-600">View</a>
                             <?php else: ?>
-                                <span style="color: var(--text-dim); font-size: 0.8rem;">Not available</span>
+                                <span class="text-dim">—</span>
                             <?php endif; ?>
                         </td>
                         <td>
-                            <button type="button" class="btn btn-primary btn-sm" onclick="openOutreachModal(<?= $cand['id'] ?>, '<?= htmlspecialchars(addslashes($cand['full_name'])) ?>')">
-                                ✉ Send Invite
+                            <button type="button" class="btn btn-outline btn-sm" onclick="openOutreachModal(<?= $cand['id'] ?>, '<?= htmlspecialchars(addslashes($cand['full_name'])) ?>')">
+                                Invite
                             </button>
                         </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
-        </table>
+        </table></div>
     <?php endif; ?>
 </div>
 
 <!-- Send Candidate Invite Modal -->
-<div class="modal-backdrop" id="outreach-modal">
+<div class="modal-backdrop" id="outreach-modal" role="dialog" aria-modal="true">
     <div class="modal-box">
         <div class="card-header">
-            <div class="card-title">Send Opportunity Invitation</div>
+            <h3 class="card-title">Invite to apply</h3>
             <button type="button" class="btn btn-outline btn-sm" onclick="closeModal('outreach-modal')">Close</button>
         </div>
 
@@ -116,53 +111,53 @@
             <input type="hidden" name="student_id" id="modal-student-id">
 
             <div class="form-group">
-                <label class="form-label">Recipient Candidate</label>
-                <input type="text" id="modal-student-name" class="form-control" readonly style="background: #f8fafc; font-weight: 700;">
+                <label class="form-label" for="modal-student-name">To</label>
+                <input type="text" id="modal-student-name" class="form-control" readonly>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Select Target Shortlist Bucket</label>
-                <select name="shortlist_id" class="form-control" required>
+                <label class="form-label" for="m-bucket">Shortlist</label>
+                <select name="shortlist_id" id="m-bucket" class="form-control" required>
                     <?php if (empty($shortlists)): ?>
-                        <option value="0" selected>General Direct Candidate Outreach Pool (Default)</option>
+                        <option value="0" selected>No shortlist</option>
                     <?php else: ?>
                         <?php foreach ($shortlists as $sl): ?>
-                            <option value="<?= $sl['id'] ?>"><?= htmlspecialchars($sl['bucket_name']) ?> (Min CGPA: <?= $sl['filter_cgpa_min'] ?>)</option>
+                            <option value="<?= $sl['id'] ?>"><?= htmlspecialchars($sl['bucket_name']) ?> (CGPA ≥ <?= $sl['filter_cgpa_min'] ?>)</option>
                         <?php endforeach; ?>
-                        <option value="0">+ General Direct Candidate Outreach Pool</option>
+                        <option value="0">No shortlist</option>
                     <?php endif; ?>
                 </select>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Invitation Message / Opportunity Summary</label>
-                <textarea name="message" class="form-control" rows="4" placeholder="Dear candidate, we were impressed by your profile and invite you to apply for our upcoming recruitment drive..." required></textarea>
+                <label class="form-label" for="m-msg">Message</label>
+                <textarea name="message" id="m-msg" class="form-control" rows="4" placeholder="Why you're reaching out and which role to apply for" required></textarea>
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 10px;">
-                Dispatch Direct Invitation Alert
+            <button type="submit" class="btn btn-primary btn-block">
+                Send invitation
             </button>
         </form>
     </div>
 </div>
 
 <!-- Create New Bucket Modal -->
-<div class="modal-backdrop" id="new-bucket-modal">
+<div class="modal-backdrop" id="new-bucket-modal" role="dialog" aria-modal="true">
     <div class="modal-box">
         <div class="card-header">
-            <div class="card-title">Create Target Shortlist Bucket</div>
+            <h3 class="card-title">New shortlist</h3>
             <button type="button" class="btn btn-outline btn-sm" onclick="closeModal('new-bucket-modal')">Close</button>
         </div>
 
         <form action="index.php?controller=recruiter&action=create_bucket" method="POST">
             <div class="form-group">
-                <label class="form-label">Bucket Name / Purpose</label>
+                <label class="form-label">Name</label>
                 <input type="text" name="bucket_name" class="form-control" placeholder="e.g. Fall 2026 SQA Engineering Talent" required>
             </div>
 
             <div class="grid-2">
                 <div class="form-group">
-                    <label class="form-label">Target Department</label>
+                    <label class="form-label">Department</label>
                     <select name="filter_dept" class="form-control">
                         <option value="CSE">Computer Science (CSE)</option>
                         <option value="EEE">Electrical Engineering (EEE)</option>
@@ -171,13 +166,13 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Minimum CGPA Criterion</label>
+                    <label class="form-label">Minimum CGPA</label>
                     <input type="number" step="0.01" min="0.00" max="4.00" name="min_cgpa" class="form-control" value="3.50" required>
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 10px;">
-                Save Shortlist Bucket
+            <button type="submit" class="btn btn-primary btn-block">
+                Create shortlist
             </button>
         </form>
     </div>

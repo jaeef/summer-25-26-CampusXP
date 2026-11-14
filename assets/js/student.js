@@ -103,7 +103,7 @@ function handleQuickApplyClick(btn) {
         if (typeof openModal === 'function') {
             openModal('cgpa-warning-modal');
         } else {
-            alert("⚠️ Minimum CGPA Requirement Notice:\nThis position requires a minimum CGPA of " + minCgpa.toFixed(2) + ".\nYour current recorded CGPA is " + studentCgpa.toFixed(2) + ".\nYou do not meet the minimum requirement to apply for this position.");
+            alert("This position requires a minimum CGPA of " + minCgpa.toFixed(2) + ".\nYour current recorded CGPA is " + studentCgpa.toFixed(2) + ".\nYou do not meet the minimum requirement to apply for this position.");
         }
         return;
     }
@@ -144,26 +144,18 @@ function openQuickApplyModal(driveId, driveTitle, organizerName, driveType, save
     if (sopInput) sopInput.value = savedSop || '';
 
     if (driveType === 'corporate') {
-        if (roleLabel) roleLabel.innerHTML = 'Position Applied For <span style="font-size:0.75rem; color:var(--brand-purple); font-weight:700;">(Fixed by Recruiter)</span>';
+        if (roleLabel) roleLabel.innerText = 'Position';
         if (roleInput) {
             roleInput.value = fixedRole || driveTitle;
             roleInput.readOnly = true;
-            roleInput.style.background = '#f1f5f9';
-            roleInput.style.color = '#1e293b';
-            roleInput.style.cursor = 'not-allowed';
-            roleInput.style.fontWeight = '700';
             roleInput.title = 'The application position is set by the hiring recruiter and cannot be altered.';
         }
         if (roleHint) roleHint.style.display = 'block';
     } else {
-        if (roleLabel) roleLabel.innerText = 'Position / Role Applied For';
+        if (roleLabel) roleLabel.innerText = 'Role you are applying for';
         if (roleInput) {
             roleInput.value = fixedRole || 'Candidate Member';
             roleInput.readOnly = false;
-            roleInput.style.background = '#ffffff';
-            roleInput.style.color = 'var(--text-main)';
-            roleInput.style.cursor = 'text';
-            roleInput.style.fontWeight = 'normal';
             roleInput.title = '';
         }
         if (roleHint) roleHint.style.display = 'none';
@@ -194,16 +186,13 @@ function openQuickApplyModal(driveId, driveTitle, organizerName, driveType, save
 
                 var formGroup = document.createElement('div');
                 formGroup.className = 'form-group';
-                formGroup.style.marginBottom = '8px';
 
                 var labelEl = document.createElement('label');
                 labelEl.className = 'form-label';
-                labelEl.style.fontSize = '0.82rem';
-                labelEl.style.fontWeight = '600';
 
                 var inputEl;
                 if (fType === 'url') {
-                    labelEl.innerHTML = escapeHtml(fLabel) + ' <span style="color:var(--brand-purple); font-size:0.75rem;">(Valid URL Link)</span>';
+                    labelEl.innerHTML = escapeHtml(fLabel) + ' <span class="text-dim fw-600">(link)</span>';
                     inputEl = document.createElement('input');
                     inputEl.type = 'url';
                     inputEl.className = 'form-control';
@@ -212,7 +201,7 @@ function openQuickApplyModal(driveId, driveTitle, organizerName, driveType, save
                     inputEl.title = 'Please enter a valid web URL link starting with http:// or https://';
                     inputEl.required = true;
                 } else if (fType === 'textarea') {
-                    labelEl.innerHTML = escapeHtml(fLabel) + ' <span style="color:var(--text-dim); font-size:0.75rem;">(Detailed Paragraph)</span>';
+                    labelEl.innerHTML = escapeHtml(fLabel) + '';
                     inputEl = document.createElement('textarea');
                     inputEl.className = 'form-control';
                     inputEl.rows = 3;
@@ -220,7 +209,7 @@ function openQuickApplyModal(driveId, driveTitle, organizerName, driveType, save
                     inputEl.required = true;
                     inputEl.minLength = 5;
                 } else {
-                    labelEl.innerHTML = escapeHtml(fLabel) + ' <span style="color:var(--text-dim); font-size:0.75rem;">(Short Text)</span>';
+                    labelEl.innerHTML = escapeHtml(fLabel) + '';
                     inputEl = document.createElement('input');
                     inputEl.type = 'text';
                     inputEl.className = 'form-control';
@@ -275,9 +264,9 @@ function toggleBookmarkAjax(event, buttonElement, itemType, itemId) {
 
             if (data.bookmarked) {
                 // Marked as Saved
-                buttonElement.innerHTML = '★ Saved';
+                buttonElement.innerHTML = 'Saved';
                 buttonElement.className = 'btn btn-sm btn-bookmark-active';
-                buttonElement.title = 'Remove Bookmark';
+                buttonElement.title = 'Remove from saved';
                 
                 if (card) {
                     card.setAttribute('data-saved', '1');
@@ -286,13 +275,7 @@ function toggleBookmarkAjax(event, buttonElement, itemType, itemId) {
                         if (badgeContainer) {
                             var span = document.createElement('span');
                             span.className = 'bookmarked-tag';
-                            span.style.fontSize = '0.75rem';
-                            span.style.color = '#b45309';
-                            span.style.fontWeight = '700';
-                            span.style.background = '#fef3c7';
-                            span.style.padding = '2px 6px';
-                            span.style.borderRadius = '4px';
-                            span.innerText = '★ Bookmarked';
+                            span.innerText = 'Saved';
                             badgeContainer.appendChild(span);
                         }
                     } else {
@@ -302,9 +285,9 @@ function toggleBookmarkAjax(event, buttonElement, itemType, itemId) {
                 showToast(data.message || 'Saved to your Bookmarks!', 'success');
             } else {
                 // Marked as Unsaved
-                buttonElement.innerHTML = '☆ Save';
+                buttonElement.innerHTML = 'Save';
                 buttonElement.className = 'btn btn-outline btn-sm';
-                buttonElement.title = 'Save to Bookmarks';
+                buttonElement.title = 'Save for later';
 
                 if (card) {
                     card.setAttribute('data-saved', '0');
@@ -329,7 +312,7 @@ function toggleBookmarkAjax(event, buttonElement, itemType, itemId) {
 
             var pillSaved = document.getElementById('cat-pill-saved');
             if (pillSaved && data.total_saved !== undefined) {
-                pillSaved.innerText = '★ Saved Bookmarks (' + data.total_saved + ')';
+                pillSaved.innerText = 'Saved (' + data.total_saved + ')';
             }
         } else {
             buttonElement.innerHTML = originalHtml;
@@ -378,13 +361,13 @@ function showToast(message, type) {
     toast.style.pointerEvents = 'auto';
 
     if (type === 'success') {
-        toast.style.background = '#15803d';
+        toast.style.background = '#17663a';
         toast.style.color = '#ffffff';
     } else if (type === 'error') {
-        toast.style.background = '#dc2626';
+        toast.style.background = '#b42318';
         toast.style.color = '#ffffff';
     } else {
-        toast.style.background = '#1e3a8a';
+        toast.style.background = '#0b1f3a';
         toast.style.color = '#ffffff';
     }
 
@@ -442,9 +425,9 @@ function initProfileLivePreview() {
         if (pCvContainer) {
             var cvUrl = inCv.value.trim();
             if (cvUrl) {
-                pCvContainer.innerHTML = '<a href="' + encodeURI(cvUrl) + '" target="_blank" style="font-size:0.85rem; font-weight:600;">View Document</a>';
+                pCvContainer.innerHTML = '<a href="' + encodeURI(cvUrl) + '" target="_blank" rel="noopener" class="fw-600">View CV</a>';
             } else {
-                pCvContainer.innerHTML = '<span style="color:var(--text-dim); font-size:0.85rem;">No URL Provided</span>';
+                pCvContainer.innerHTML = '<span class="text-dim">No CV link yet</span>';
             }
         }
 
@@ -463,14 +446,14 @@ function initProfileLivePreview() {
                         var safeSkill = skillsArr[k].replace(/[&<>"']/g, function(m) {
                             return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m];
                         });
-                        html += '<span class="badge-tag" style="background:#eff6ff; color:var(--brand-blue); border:1px solid #bfdbfe; font-size:0.75rem;">' + safeSkill + '</span>';
+                        html += '<span class="badge-tag">' + safeSkill + '</span>';
                     }
                     pSkillsContainer.innerHTML = html;
                 } else {
-                    pSkillsContainer.innerHTML = '<span style="color:var(--text-dim); font-size:0.8rem; font-style:italic;">No skills specified yet</span>';
+                    pSkillsContainer.innerHTML = '<span class="text-dim text-sm">No skills added yet</span>';
                 }
             } else {
-                pSkillsContainer.innerHTML = '<span style="color:var(--text-dim); font-size:0.8rem; font-style:italic;">No skills specified yet</span>';
+                pSkillsContainer.innerHTML = '<span class="text-dim text-sm">No skills added yet</span>';
             }
         }
     }

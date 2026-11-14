@@ -1,130 +1,110 @@
 <?php require_once __DIR__ . '/../layouts/header.php'; ?>
 
-<div class="portal-header">
+<div class="page-header">
     <div>
-        <h1 class="portal-title">Publish Job Opening & Custom Screening Form</h1>
-        <p class="portal-sub">Attach custom assessment questions and screening prompts to your corporate job opening/internship circular.</p>
+        <h1 class="page-title">Post a job</h1>
+        <p class="page-sub">Job posts are reviewed by OSA before students see them. Add screening questions if you need more than a CV and statement.</p>
     </div>
-    <a href="index.php?controller=recruiter&action=dashboard" class="btn btn-outline btn-sm">← Back to Job Openings</a>
+    <a href="index.php?controller=recruiter&action=dashboard" class="btn btn-outline btn-sm">Back to job posts</a>
 </div>
 
-<div class="grid-2" style="margin-bottom: 2rem;">
-    <!-- Main Form Settings -->
+<div class="grid-2 section" style="align-items: start;">
     <div class="glass-card">
         <div class="card-header">
-            <div class="card-title">1. Job Opening Core Details</div>
+            <h2 class="card-title">Job details</h2>
         </div>
 
         <form action="index.php?controller=recruiter&action=save_drive" method="POST" id="drive-builder-form" onsubmit="return validateDriveBuilderForm()">
             <div class="form-group">
-                <label class="form-label">Hiring Company Name</label>
-                <input type="text" name="company_name" class="form-control" value="Brain Station 23" required>
+                <label class="form-label" for="company-input">Company</label>
+                <input type="text" name="company_name" id="company-input" class="form-control" value="Brain Station 23" required>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Position Title</label>
+                <label class="form-label" for="job-title-input">Job title</label>
                 <input type="text" name="job_title" id="job-title-input" class="form-control" placeholder="e.g. Associate Software Engineer" pattern="^[a-zA-Z\s\-]+$" minlength="2" maxlength="100" title="Position title must contain only letters and spaces (a-z, A-Z)" required oninput="validateJobTitleInput(this)">
-                <div id="job-title-error" style="color: #dc2626; font-size: 0.75rem; margin-top: 2px; display: none;"></div>
+                <div class="field-error" id="job-title-error" style="display: none;"></div>
             </div>
 
-            <div class="grid-2">
+            <div class="grid-2" style="gap: 0 1rem;">
                 <div class="form-group">
-                    <label class="form-label">Opportunity / Event Category</label>
-                    <select name="job_type" class="form-control" required>
-                        <option value="Internship" selected>Internship (Undergraduate / Graduate)</option>
-                        <option value="Full-Time">Full-Time Career Position</option>
-                        <option value="Seminar">Tech Seminar / Industry Keynote</option>
-                        <option value="Workshop">Technical Workshop / Hands-on Bootcamp</option>
-                        <option value="Fest / Hackathon">Hackathon / Campus Fest Competition</option>
+                    <label class="form-label" for="job-type-input">Type</label>
+                    <select name="job_type" id="job-type-input" class="form-control" required>
+                        <option value="Internship" selected>Internship</option>
+                        <option value="Full-Time">Full-time job</option>
+                        <option value="Seminar">Seminar / talk</option>
+                        <option value="Workshop">Workshop / bootcamp</option>
+                        <option value="Fest / Hackathon">Hackathon / competition</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Minimum Eligible CGPA</label>
-                    <input type="number" step="0.01" min="0.00" max="4.00" name="min_cgpa" class="form-control" value="3.00" required>
+                    <label class="form-label" for="min-cgpa-input">Minimum CGPA</label>
+                    <input type="number" step="0.01" min="0.00" max="4.00" name="min_cgpa" id="min-cgpa-input" class="form-control" value="3.00" required>
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Application Deadline</label>
-                <input type="date" name="deadline" class="form-control" value="<?= date('Y-m-d', strtotime('+30 days')) ?>" required>
+                <label class="form-label" for="deadline-input">Application deadline</label>
+                <input type="date" name="deadline" id="deadline-input" class="form-control" value="<?= date('Y-m-d', strtotime('+30 days')) ?>" required>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Job Requirements & Technical Stack</label>
-                <textarea name="requirements" class="form-control" rows="3" placeholder="Specify tech stack requirements (e.g. PHP, JavaScript, MySQL, OOP)..." required></textarea>
+                <label class="form-label" for="requirements-input">Requirements</label>
+                <textarea name="requirements" id="requirements-input" class="form-control" rows="3" placeholder="Skills and stack, e.g. PHP, JavaScript, MySQL, OOP" required></textarea>
             </div>
 
-            <!-- 2. Dynamic Custom Form Fields Section -->
-            <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-light);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div class="form-section">
+                <div class="row-between mb-2">
                     <div>
-                        <strong style="font-size: 0.95rem; color: #0f172a;">2. Dynamic Form Questions</strong>
-                        <div style="font-size: 0.78rem; color: var(--text-muted);">Custom fields students must answer when applying.</div>
+                        <h3>Screening questions</h3>
+                        <div class="text-xs text-muted">Students answer these when they apply.</div>
                     </div>
-                    <button type="button" class="btn btn-outline btn-sm" onclick="addCustomField()">+ Add Question</button>
+                    <button type="button" class="btn btn-outline btn-sm" onclick="addCustomField()">Add question</button>
                 </div>
 
-                <div id="custom-fields-container" style="display: flex; flex-direction: column; gap: 8px;">
-                    <!-- Default Field 1: GitHub / Portfolio -->
-                    <div class="custom-field-row" id="custom-field-1" style="display: flex; gap: 8px; align-items: center; background: #f8fafc; padding: 8px; border: 1px solid var(--border-light); border-radius: var(--radius-sm);">
-                        <input type="text" name="custom_labels[]" class="form-control" value="GitHub / Portfolio Profile Link" placeholder="New Question / Field Prompt" required style="flex: 2;" oninput="updateCustomFieldsPreview()">
-                        <select name="custom_types[]" class="form-control" style="flex: 1;" onchange="updateCustomFieldsPreview()">
-                            <option value="url" selected>URL Link</option>
-                            <option value="text">Short Text</option>
-                            <option value="textarea">Long Paragraph</option>
+                <div id="custom-fields-container" class="stack">
+                    <div class="custom-field-row" id="custom-field-1">
+                        <input type="text" name="custom_labels[]" class="form-control" value="GitHub / Portfolio Profile Link" placeholder="Question" aria-label="Question" required oninput="updateCustomFieldsPreview()">
+                        <select name="custom_types[]" class="form-control" aria-label="Answer type" onchange="updateCustomFieldsPreview()">
+                            <option value="url" selected>Link</option>
+                            <option value="text">Short answer</option>
+                            <option value="textarea">Paragraph</option>
                         </select>
-                        <button type="button" class="btn btn-outline btn-sm" onclick="removeCustomField('custom-field-1')" style="color: #dc2626; padding: 4px 10px;">✕</button>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="removeCustomField('custom-field-1')">Remove</button>
                     </div>
 
-                    <!-- Default Field 2: Long Paragraph -->
-                    <div class="custom-field-row" id="custom-field-2" style="display: flex; gap: 8px; align-items: center; background: #f8fafc; padding: 8px; border: 1px solid var(--border-light); border-radius: var(--radius-sm);">
-                        <input type="text" name="custom_labels[]" class="form-control" value="Why are you interested in joining our engineering team?" placeholder="New Question / Field Prompt" required style="flex: 2;" oninput="updateCustomFieldsPreview()">
-                        <select name="custom_types[]" class="form-control" style="flex: 1;" onchange="updateCustomFieldsPreview()">
-                            <option value="textarea" selected>Long Paragraph</option>
-                            <option value="text">Short Text</option>
-                            <option value="url">URL Link</option>
+                    <div class="custom-field-row" id="custom-field-2">
+                        <input type="text" name="custom_labels[]" class="form-control" value="Why are you interested in joining our engineering team?" placeholder="Question" aria-label="Question" required oninput="updateCustomFieldsPreview()">
+                        <select name="custom_types[]" class="form-control" aria-label="Answer type" onchange="updateCustomFieldsPreview()">
+                            <option value="textarea" selected>Paragraph</option>
+                            <option value="text">Short answer</option>
+                            <option value="url">Link</option>
                         </select>
-                        <button type="button" class="btn btn-outline btn-sm" onclick="removeCustomField('custom-field-2')" style="color: #dc2626; padding: 4px 10px;">✕</button>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="removeCustomField('custom-field-2')">Remove</button>
                     </div>
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px; margin-top: 1.5rem;">
-                Publish Opportunity / Circular
-            </button>
+            <button type="submit" class="btn btn-primary btn-block mt-2" style="margin-top: 1.5rem;">Submit for approval</button>
         </form>
     </div>
 
-    <!-- Live Candidate Form Preview -->
-    <div class="glass-card" style="background: #ffffff;">
+    <div class="glass-card">
         <div class="card-header">
-            <div class="card-title">Live Candidate Application Modal Preview</div>
-            <span class="badge-tag badge-recruiter">Applicant View</span>
+            <h2 class="card-title">What applicants fill in</h2>
         </div>
 
-        <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 1rem;">
-            This is what AIUB students will see and fill out when they click "1-Click Apply" on your recruitment card:
-        </p>
+        <div class="form-label">From their profile</div>
+        <ul class="text-sm text-muted mb-2" style="padding-left: 1.1rem;">
+            <li>Student ID and CGPA</li>
+            <li>CV link</li>
+            <li>Statement of purpose</li>
+        </ul>
 
-        <div style="background: #f8fafc; border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 1rem;">
-            <div class="form-group">
-                <label class="form-label" style="color: var(--text-dim);">Auto-Filled Student Vault Data</label>
-                <div style="background: #ffffff; border: 1px solid var(--border-strong); border-radius: 4px; padding: 8px; font-size: 0.85rem;">
-                    <div>✓ AIUB Student ID & Verified CGPA</div>
-                    <div>✓ Resume / CV URL Link</div>
-                    <div>✓ Auto-Filled Statement of Purpose (SOP)</div>
-                </div>
-            </div>
-
-            <div style="border-top: 1px dashed var(--border-strong); margin: 1rem 0;"></div>
-
-            <div class="form-group">
-                <label class="form-label" style="color: var(--brand-purple); font-weight: 700;">Recruiter Custom Assessment Questions:</label>
-                <div id="preview-custom-list" style="display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem; color: var(--text-main);">
-                    <div>• GitHub / Portfolio Profile Link [URL Link]</div>
-                    <div>• Why are you interested in joining our engineering team? [Paragraph]</div>
-                </div>
-            </div>
+        <div class="form-label">Your questions</div>
+        <div id="preview-custom-list" class="text-sm">
+            <div class="row-between list-item"><span>GitHub / Portfolio Profile Link</span><span class="text-xs text-dim">Link</span></div>
+            <div class="row-between list-item"><span>Why are you interested in joining our engineering team?</span><span class="text-xs text-dim">Paragraph</span></div>
         </div>
     </div>
 </div>

@@ -1,76 +1,75 @@
 <?php require_once __DIR__ . '/../layouts/header.php'; ?>
 
-<div class="portal-header">
+<div class="page-header">
     <div>
-        <h1 class="portal-title">Campus Event Moderation Queue</h1>
-        <p class="portal-sub">Approve or reject club recruitment campaigns and corporate tech seminars before publishing to student radar.</p>
+        <h1 class="page-title">Approvals</h1>
+        <p class="page-sub">Club drives and corporate job posts only reach students after you approve them.</p>
     </div>
-    <a href="index.php?controller=admin&action=dashboard" class="btn btn-outline btn-sm">← Back to Overview</a>
 </div>
 
 <div class="glass-card">
     <div class="card-header">
-        <div class="card-title">Submitted Campaign Queue (<?= count($requests) ?>)</div>
+        <h2 class="card-title">Submissions <span class="count-badge"><?= count($requests) ?></span></h2>
     </div>
 
     <?php if (empty($requests)): ?>
-        <p style="color: var(--text-muted); font-size: 0.88rem;">No moderation requests found.</p>
+        <div class="empty-state">No submissions yet.</div>
     <?php else: ?>
-        <table class="data-table">
+        <div class="table-wrap"><table class="data-table">
             <thead>
                 <tr>
-                    <th>Event / Drive Title</th>
-                    <th>Category</th>
-                    <th>Organizer / Submitter</th>
-                    <th>Submission Date</th>
-                    <th>Current Status</th>
-                    <th>Moderator Feedback</th>
-                    <th>Decision Action</th>
+                    <th>Title</th>
+                    <th>Type</th>
+                    <th>Submitted by</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Comment</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($requests as $r): ?>
                     <tr>
-                        <td style="font-weight: 700; color: var(--text-main);"><?= htmlspecialchars($r['title']) ?></td>
-                        <td><span class="badge-tag badge-student"><?= htmlspecialchars($r['target_type']) ?></span></td>
+                        <td class="fw-600"><?= htmlspecialchars($r['title']) ?></td>
+                        <td><?= htmlspecialchars($r['target_type']) ?></td>
                         <td><?= htmlspecialchars($r['submitted_by']) ?></td>
                         <td><?= date('M d, Y', strtotime($r['submitted_at'])) ?></td>
                         <td>
                             <?php if ($r['status'] === 'Approved'): ?>
-                                <span class="badge-tag badge-exec">Approved</span>
+                                <span class="badge-tag tag-success">Approved</span>
                             <?php elseif ($r['status'] === 'Rejected'): ?>
-                                <span class="badge-tag badge-danger">Rejected</span>
+                                <span class="badge-tag tag-danger">Rejected</span>
                             <?php else: ?>
-                                <span class="badge-tag" style="background:#fef3c7; color:#b45309; border:1px solid #fde68a;">Pending Review</span>
+                                <span class="badge-tag tag-warning">Pending</span>
                             <?php endif; ?>
                         </td>
-                        <td style="font-size: 0.82rem; color: var(--text-muted);">
-                            <?= htmlspecialchars($r['admin_comments'] ?: 'No comments logged') ?>
+                        <td class="text-xs text-muted wrap">
+                            <?= htmlspecialchars($r['admin_comments'] ?: '—') ?>
                         </td>
                         <td>
                             <?php if ($r['status'] === 'Pending'): ?>
-                                <div style="display: flex; gap: 4px;">
-                                    <form action="index.php?controller=admin&action=moderate_action" method="POST" style="margin:0;">
+                                <div class="row" style="gap: 6px; flex-wrap: nowrap;">
+                                    <form action="index.php?controller=admin&action=moderate_action" method="POST">
                                         <input type="hidden" name="request_id" value="<?= $r['id'] ?>">
                                         <input type="hidden" name="decision" value="Approved">
                                         <input type="hidden" name="admin_comments" value="Approved for campus publication.">
-                                        <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                                        <button type="submit" class="btn btn-sm">Approve</button>
                                     </form>
-                                    <form action="index.php?controller=admin&action=moderate_action" method="POST" style="margin:0;">
+                                    <form action="index.php?controller=admin&action=moderate_action" method="POST">
                                         <input type="hidden" name="request_id" value="<?= $r['id'] ?>">
                                         <input type="hidden" name="decision" value="Rejected">
                                         <input type="hidden" name="admin_comments" value="Requires revised eligibility criteria.">
-                                        <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                                        <button type="submit" class="btn btn-sm btn-outline">Reject</button>
                                     </form>
                                 </div>
                             <?php else: ?>
-                                <span style="font-size: 0.78rem; color: var(--text-dim);"><?= date('M d, Y', strtotime($r['reviewed_at'])) ?></span>
+                                <span class="text-xs text-dim"><?= date('M d, Y', strtotime($r['reviewed_at'])) ?></span>
                             <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
-        </table>
+        </table></div>
     <?php endif; ?>
 </div>
 
